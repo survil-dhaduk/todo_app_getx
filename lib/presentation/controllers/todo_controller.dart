@@ -2,10 +2,9 @@ import 'package:get/get.dart';
 
 import '../../core/services/storage_service.dart';
 import '../../data/models/todo_model.dart';
-import '../../domain/entities/todo_entity.dart';
 
 class TodoController extends GetxController {
-  final RxList<TodoEntity> todos = <TodoEntity>[].obs;
+  final RxList<TodoModel> todos = <TodoModel>[].obs;
   final RxString filter = 'all'.obs;
   final StorageService _storage = StorageService();
 
@@ -24,11 +23,13 @@ class TodoController extends GetxController {
     final todo = TodoModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title,
-      isCompleted: false,
+      description: '',
+      dueDate: DateTime.now(),
       createdAt: DateTime.now(),
+      isCompleted: false,
     );
     todos.add(todo);
-    await _storage.saveTodos(todos.map((todo) => todo as TodoModel).toList());
+    await _storage.saveTodos(todos.map((todo) => todo).toList());
   }
 
   Future<void> toggleTodo(String id) async {
@@ -38,19 +39,21 @@ class TodoController extends GetxController {
       todos[index] = TodoModel(
         id: todo.id,
         title: todo.title,
-        isCompleted: !todo.isCompleted,
+        description: todo.description,
+        dueDate: todo.dueDate,
         createdAt: todo.createdAt,
+        isCompleted: !todo.isCompleted,
       );
-      await _storage.saveTodos(todos.map((todo) => todo as TodoModel).toList());
+      await _storage.saveTodos(todos.map((todo) => todo).toList());
     }
   }
 
   Future<void> deleteTodo(String id) async {
     todos.removeWhere((todo) => todo.id == id);
-    await _storage.saveTodos(todos.map((todo) => todo as TodoModel).toList());
+    await _storage.saveTodos(todos.map((todo) => todo).toList());
   }
 
-  List<TodoEntity> get filteredTodos {
+  List<TodoModel> get filteredTodos {
     switch (filter.value) {
       case 'completed':
         return todos.where((todo) => todo.isCompleted).toList();

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_app/data/models/todo_model.dart';
+
 import '../../../../core/constants/app_strings.dart';
 import '../../../../domain/entities/todo_entity.dart';
 import '../../../controllers/todo_controller.dart';
 
 class TodoItem extends GetView<TodoController> {
-  final TodoEntity todo;
+  final TodoModel todo;
 
   const TodoItem({super.key, required this.todo});
 
@@ -25,7 +27,7 @@ class TodoItem extends GetView<TodoController> {
           ),
         ),
         subtitle: Text(
-          todo.createdAt.toString().split('.')[0],
+          todo.dueDate.toString().split('.')[0],
           style: Theme.of(context).textTheme.bodySmall,
         ),
         trailing: IconButton(
