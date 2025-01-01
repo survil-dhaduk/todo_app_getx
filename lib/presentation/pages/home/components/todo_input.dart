@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:todo_app/core/utils/notification_service.dart';
 import 'package:todo_app/data/models/todo_model.dart';
-import 'package:todo_app/main.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../controllers/todo_controller.dart';

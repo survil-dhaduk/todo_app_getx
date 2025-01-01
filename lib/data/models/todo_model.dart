@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:todo_app/domain/entities/todo_entity.dart';
 
+// Hive type adapter for TodoModel
 part 'todo_model.g.dart';
 
 @HiveType(typeId: 0)
@@ -29,7 +30,7 @@ class TodoModel extends TodoEntity {
   @override
   final DateTime createdAt;
 
-  @HiveField(6)
+  @HiveField(6) // Reminder field for notifications
   final DateTime? reminder;
 
   TodoModel({
@@ -49,6 +50,7 @@ class TodoModel extends TodoEntity {
           isCompleted: isCompleted,
         );
 
+  // Factory method to create TodoModel from JSON
   factory TodoModel.fromJson(Map<String, dynamic> json) {
     return TodoModel(
       id: json['id'],
@@ -62,6 +64,7 @@ class TodoModel extends TodoEntity {
     );
   }
 
+  // Convert TodoModel to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
