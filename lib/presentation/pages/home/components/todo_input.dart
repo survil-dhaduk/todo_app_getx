@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:todo_app/core/utils/notification_service.dart';
 import 'package:todo_app/data/models/todo_model.dart';
+import 'package:todo_app/main.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../controllers/todo_controller.dart';
@@ -64,8 +65,7 @@ class TodoInput extends GetView<TodoController> {
 
                 if (reminderTime.isAfter(now)) {
                   // Schedule the notification
-                  final notificationService =
-                      NotificationService(FlutterLocalNotificationsPlugin());
+                  final notificationService =NotificationService();
                   await notificationService.scheduleTodoNotification(
                     TodoModel(
                       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -74,6 +74,7 @@ class TodoInput extends GetView<TodoController> {
                       dueDate: reminderTime,
                       createdAt: DateTime.now(),
                       isCompleted: false,
+                      reminder: reminderTime,
                     ),
                   );
                 }

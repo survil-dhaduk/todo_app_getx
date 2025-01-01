@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:todo_app/data/models/todo_model.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../../../domain/entities/todo_entity.dart';
 import '../../../controllers/todo_controller.dart';
 
 class TodoItem extends GetView<TodoController> {
@@ -26,9 +25,19 @@ class TodoItem extends GetView<TodoController> {
             decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
           ),
         ),
-        subtitle: Text(
-          todo.dueDate.toString().split('.')[0],
-          style: Theme.of(context).textTheme.bodySmall,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              todo.dueDate.toString().split('.')[0],
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (todo.reminder != null)
+              Text(
+                'Reminder set: ${todo.reminder.toString().split('.')[0]}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+          ],
         ),
         trailing: IconButton(
           icon: const Icon(Icons.delete),

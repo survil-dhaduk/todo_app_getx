@@ -29,6 +29,9 @@ class TodoModel extends TodoEntity {
   @override
   final DateTime createdAt;
 
+  @HiveField(6)
+  final DateTime? reminder;
+
   TodoModel({
     required this.id,
     required this.title,
@@ -36,6 +39,7 @@ class TodoModel extends TodoEntity {
     required this.dueDate,
     required this.createdAt,
     this.isCompleted = false,
+    this.reminder,
   }) : super(
           id: id,
           title: title,
@@ -53,6 +57,8 @@ class TodoModel extends TodoEntity {
       dueDate: DateTime.parse(json['dueDate']),
       createdAt: DateTime.parse(json['createdAt']),
       isCompleted: json['isCompleted'] ?? false,
+      reminder:
+          json['reminder'] != null ? DateTime.parse(json['reminder']) : null,
     );
   }
 
@@ -64,6 +70,7 @@ class TodoModel extends TodoEntity {
       'dueDate': dueDate.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'isCompleted': isCompleted,
+      'reminder': reminder?.toIso8601String(),
     };
   }
 }

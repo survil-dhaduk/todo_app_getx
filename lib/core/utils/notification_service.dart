@@ -1,13 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:todo_app/data/models/todo_model.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:todo_app/main.dart';
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin _notifications;
 
-  NotificationService(this._notifications) {
-    _initializeNotifications();
-  }
+
+
 
   Future<void> _initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -20,37 +20,56 @@ class NotificationService {
       iOS: initializationSettingsIOS,
     );
 
-    await _notifications.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<bool> requestAlarmPermission() async {
+    // Check if permission is granted
+    final status = await Permission.notification.request();
+    if (!status.isGranted) {
+      // Handle permission denial
+      print("Permission denied. Unable to set alarms.");
+      return false;
+    }
+    return true;
   }
 
   Future<void> scheduleTodoNotification(TodoModel todo) async {
-    const androidDetails = AndroidNotificationDetails(
-      'todo_channel',
-      'Todo Notifications',
-      channelDescription: 'Notifications for todo tasks',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+    // Ensure permission for Android 14+ (alarm permission)
+    if (await Permission.notification.isGranted) {
+      if (todo.reminder == null) return;
 
-    const iosDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+      const androidDetails = AndroidNotificationDetails(
+        'todo_channel',
+        'Todo Notifications',
+        channelDescription: 'Notifications for todo tasks',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
 
-    await _notifications.zonedSchedule(
-      todo.hashCode,
-      'Todo Reminder',
-      todo.title,
-      tz.TZDateTime.from(todo.dueDate, tz.local),
-      details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
+      const iosDetails = DarwinNotificationDetails();
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        todo.hashCode,
+        'Todo Reminder',
+        todo.title,
+        tz.TZDateTime.from(todo.reminder!, tz.local),
+        details,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } else {
+      final isGranted = await requestAlarmPermission();
+      if (isGranted) scheduleTodoNotification(todo);
+    }
   }
 
   Future<void> cancelNotification(int id) async {
-    await _notifications.cancel(id);
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 }
